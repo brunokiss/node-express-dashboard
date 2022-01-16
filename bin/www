@@ -7,6 +7,8 @@
 const app = require("../app");
 const debug = require("debug")("log-dashboard:server");
 const http = require("http");
+const WebSocket = require('ws');
+
 
 /**
  * Get port from environment and store in Express.
@@ -21,12 +23,19 @@ app.set("port", port);
 
 const server = http.createServer(app);
 
+const wss = new WebSocket.Server({server: server});
+
 /**
  * Listen on provided port, on all network interfaces.
  */
 
 server.listen(port);
 server.on("error", onError);
+wss.on("connection", (ws)=>{
+  ws.on('message', (message)=>{
+    ws.send("Hello from the server! You sent: " + message);
+  });
+});
 server.on("listening", onListening);
 
 /**
